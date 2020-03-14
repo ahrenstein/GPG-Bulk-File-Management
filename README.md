@@ -26,7 +26,8 @@ This script only requires a few libraries that are found in the [requirements.tx
 1. `gnupg` provided by the `python-gnupg` package
 2. `argparse` provided by the `argparse` package
 3. `os` provided by Python3 core libraries
-4. `datetime` privided by Python3 core libraries
+4. `sys` provided by Python3 core libraries
+5. `datetime` privided by Python3 core libraries
 
 Script Parameters
 ------------
