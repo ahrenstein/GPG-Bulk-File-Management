@@ -17,6 +17,7 @@ multiple files in a path without them being zipped into a single encrypted archi
 import argparse
 import datetime
 import os
+import sys
 import gnupg
 
 
@@ -61,7 +62,7 @@ def gpg_bulk_encrypt(key_email, delete_flag, path, log_file):
         log_file.flush()
         print(error_msg)
         log_file.close()
-        exit(1)
+        sys.exit(1)
 
     # Begin encryption
     for file in list_of_files:
@@ -164,7 +165,7 @@ def main(action, key_email, delete_flag, path):
     else:
         gpg_bulk_decrypt(delete_flag, path, log_file)
     log_file.close()
-    exit(0)
+    sys.exit()
 
 
 if __name__ == '__main__':
