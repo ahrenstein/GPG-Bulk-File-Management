@@ -48,12 +48,12 @@ def get_files(path):
 
 
 # Bulk Encrypt Files
-def gpg_bulk_encrypt(key_email, delete_flag, path, log_file):
+def gpg_bulk_encrypt(key_emails, delete_flag, path, log_file):
     """This function recursively checks the path provided
     for all non .gpg files and encrypts them
 
     Args:
-        key_email: The list of email(s) belonging to the GPG key(s) involved
+        key_emails: The list of email(s) belonging to the GPG key(s) involved
         delete_flag: True or False flag to delete the original file when performing actions
         path: The path to a folder of files to perform bulk actions on
         log_file: The open log file that entries are written to
@@ -67,13 +67,13 @@ def gpg_bulk_encrypt(key_email, delete_flag, path, log_file):
     # Instantiate GPG class with agent use
     gpg = gnupg.GPG(use_agent=True)
     # Find matching keys
-    matching_keys = gpg.list_keys(secret=True, keys=key_email)
+    matching_keys = gpg.list_keys(secret=True, keys=key_emails)
 
     # Verify the key provided is a secret key
     if matching_keys == []:
         now = datetime.datetime.now()
         error_msg = "%s: FATAL ERROR! GPG secret key for %s not found in GPG agent!" \
-                    % (now.strftime("%m/%d/%Y-%H:%M:%S"), key_email)
+                    % (now.strftime("%m/%d/%Y-%H:%M:%S"), key_emails)
         log_file.write(error_msg + "\n")
         log_file.flush()
         print(error_msg)
@@ -86,14 +86,14 @@ def gpg_bulk_encrypt(key_email, delete_flag, path, log_file):
         if ".gpg" not in file:
             now = datetime.datetime.now()
             log_message = "%s: Encrypting %s so only %s can decrypt it!" \
-                          % (now.strftime("%m/%d/%Y-%H:%M:%S"), file, key_email)
+                          % (now.strftime("%m/%d/%Y-%H:%M:%S"), file, key_emails)
             log_file.write(log_message + "\n")
             log_file.flush()
             print(log_message)
             with open(file, 'rb') as plain_file:
                 _ = gpg.encrypt_file(  # Using that temporary discarded variable again
                     file=plain_file,
-                    recipients=key_email,
+                    recipients=key_emails,
                     armor=False,
                     always_trust=True,
                     output=file + ".gpg")
@@ -168,13 +168,13 @@ def gpg_bulk_decrypt(delete_flag, path, log_file):
             print(log_message)
 
 
-def main(action, key_email, delete_flag, path):
+def main(action, key_emails, delete_flag, path):
     """The main function where we start logging and call
     all other functions from
 
     Args:
         action: The action to perform (encrypt, or decrypt)
-        key_email: The list of email(s) belonging to the GPG key(s) involved
+        key_emails: The list of email(s) belonging to the GPG key(s) involved
         delete_flag: True or False flag to delete the original file when performing actions
         path: The path to a folder of files to perform bulk actions on
 
@@ -187,12 +187,12 @@ def main(action, key_email, delete_flag, path):
                      "Action: %s\n" \
                      "Path: %s\n" \
                      "Encryption Key: %s\n" \
-                     "Delete Originals: %s" % (action, path, key_email, delete_flag)
+                     "Delete Originals: %s" % (action, path, key_emails, delete_flag)
     log_file.write("%s: Run starting.\n" % (now.strftime("%m/%d/%Y-%H:%M:%S")))
     log_file.write("%s: %s\n" % (now.strftime("%m/%d/%Y-%H:%M:%S"), actions_chosen))
     log_file.flush()
     if action == "encrypt":
-        gpg_bulk_encrypt(key_email, delete_flag, path, log_file)
+        gpg_bulk_encrypt(key_emails, delete_flag, path, log_file)
     else:
         gpg_bulk_decrypt(delete_flag, path, log_file)
     log_file.close()
@@ -221,10 +221,12 @@ if __name__ == '__main__':
         '--delete', help='Delete original files after actioned (Optional)',
         required=False, action='store_true')
     PARSER.add_argument(
-        '-k', '--keyEmail', type=str, help='GPG key email address to encrypt with', required=False)
+        '-k', '--keyEmails', type=str, action='append',
+        help='A GPG key email address to encrypt with.'
+             'You can specify this more than once.', required=False)
     # Array for all arguments passed to script
     ARGS = PARSER.parse_args()
-    if ARGS.encrypt and ARGS.keyEmail is None:
+    if ARGS.encrypt and ARGS.keyEmails is None:
         PARSER.error("-k/--keyEmail is required if you are encrypting")
     # Assign args to variables
     if ARGS.encrypt:
@@ -232,6 +234,6 @@ if __name__ == '__main__':
     else:
         ARG_ACTION = "decrypt"
     ARG_PATH = ARGS.path
-    ARG_KEY = ARGS.keyEmail
+    ARG_KEYS = ARGS.keyEmails
     ARG_DELETE = ARGS.delete
-    main(ARG_ACTION, ARG_KEY, ARG_DELETE, ARG_PATH)
+    main(ARG_ACTION, ARG_KEYS, ARG_DELETE, ARG_PATH)
