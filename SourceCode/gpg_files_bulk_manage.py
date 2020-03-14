@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""a simple Python script that allows you to encrypt/decrypt
+"""A simple Python script that allows you to encrypt/decrypt
 multiple files in a path without them being zipped into a single encrypted archive."""
 #
 # Python Script:: gpg_files_bulk_manage.py
@@ -24,7 +24,15 @@ import gnupg
 # Walk directory for files
 def get_files(path):
     """This function recursively crawls a directory for files
-    and saves them to a list with their full path"""
+    and saves them to a list with their full path
+
+    Args:
+        path: The path to a folder of files to perform bulk actions on
+
+    Returns:
+        files: An array of files with their full paths
+
+    """
     files = [] # Instantiate variable for returning list of files
     # Walk the entire path
     # Using _ instead of directories makes it a temporary discarded variable
@@ -42,7 +50,15 @@ def get_files(path):
 # Bulk Encrypt Files
 def gpg_bulk_encrypt(key_email, delete_flag, path, log_file):
     """This function recursively checks the path provided
-    for all non .gpg files and encrypts them"""
+    for all non .gpg files and encrypts them
+
+    Args:
+        key_email: The list of email(s) belonging to the GPG key(s) involved
+        delete_flag: True or False flag to delete the original file when performing actions
+        path: The path to a folder of files to perform bulk actions on
+        log_file: The open log file that entries are written to
+
+    """
     now = datetime.datetime.now()
     log_file.write("%s: Scanning %s for files\n" % (now.strftime("%m/%d/%Y-%H:%M:%S"), path))
     log_file.flush()
@@ -75,9 +91,9 @@ def gpg_bulk_encrypt(key_email, delete_flag, path, log_file):
             log_file.flush()
             print(log_message)
             with open(file, 'rb') as plain_file:
-                _ = gpg.encrypt_file( # Using that temporary discarded variable again
-                    plain_file,
-                    key_email,
+                _ = gpg.encrypt_file(  # Using that temporary discarded variable again
+                    file=plain_file,
+                    recipients=key_email,
                     armor=False,
                     always_trust=True,
                     output=file + ".gpg")
@@ -102,7 +118,14 @@ def gpg_bulk_encrypt(key_email, delete_flag, path, log_file):
 # Bulk Decrypt Files
 def gpg_bulk_decrypt(delete_flag, path, log_file):
     """This function recursively checks the path provided
-    for all .gpg files and decrypts them"""
+    for all .gpg files and decrypts them
+
+    Args:
+        delete_flag: True or False flag to delete the original file when performing actions
+        path: The path to a folder of files to perform bulk actions on
+        log_file: The open log file that entries are written to
+
+    """
     now = datetime.datetime.now()
     log_file.write("%s: Scanning %s for files\n" % (now.strftime("%m/%d/%Y-%H:%M:%S"), path))
     log_file.flush()
@@ -123,7 +146,7 @@ def gpg_bulk_decrypt(delete_flag, path, log_file):
             print(log_message)
             with open(file, 'rb') as encrypted_file:
                 _ = gpg.decrypt_file(  # Using that temporary discarded variable again
-                    encrypted_file,
+                    file=encrypted_file,
                     always_trust=True,
                     output=file.replace(".gpg", "")
                 )
@@ -147,7 +170,15 @@ def gpg_bulk_decrypt(delete_flag, path, log_file):
 
 def main(action, key_email, delete_flag, path):
     """The main function where we start logging and call
-    all other functions from"""
+    all other functions from
+
+    Args:
+        action: The action to perform (encrypt, or decrypt)
+        key_email: The list of email(s) belonging to the GPG key(s) involved
+        delete_flag: True or False flag to delete the original file when performing actions
+        path: The path to a folder of files to perform bulk actions on
+
+    """
     # First thing we do is open a log file for writing
     now = datetime.datetime.now()
     log_file_name = 'bulk_gpg_%s.log' % (now.strftime("%m%d%Y%H%M%S"))
@@ -172,7 +203,9 @@ if __name__ == '__main__':
     # This function parses and return arguments passed in
     # Assign description to the help doc
     PARSER = argparse.ArgumentParser(
-        description='Add all users from CSV to Okta Group')
+        description='A simple Python script that allows you to encrypt/decrypt\
+                    multiple files in a path without them being zipped into\
+                    a single encrypted archive.')
     # Add arguments
     ACTION = PARSER.add_mutually_exclusive_group(required=True)
     ACTION.add_argument(
