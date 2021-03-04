@@ -1,3 +1,0 @@
-argparse
-pylint
-python-gnupg
