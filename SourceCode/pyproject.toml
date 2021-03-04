@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "gpg-bulk-file-management"
+version = "1.0.0"
+description = "A Python3 script that allows you to bulk encrypt/decrypt files using a GPG key without zipping them all together"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+argparse = "^1.4.0"
+pylint = "^2.7.2"
+python-gnupg = "^0.4.6"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
