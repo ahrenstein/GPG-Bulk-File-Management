@@ -12,7 +12,7 @@ Originally this was [done in PHP](https://github.com/ahrenstein/GPG2-Bulk-File-E
 
 Limitations
 -----------
-This script was develoepd on macOS so there are a few things assumed when using this script:
+This script was developed on macOS so there are a few things assumed when using this script:
 
 1. You have a GPG agent running in the background with a functioning PIN Entry application.
 2. You are encrypting to a single GPG key that you have the secret key for in your keyring.
@@ -37,7 +37,7 @@ There are a few parameters used by this script:
 2. Encrypt or Decrypt via:
     1. `-e`/`--encrypt` - Select this to encrypt files
     2. `-d`/`--decrypt` - Select this to decrypt files
-3. `-p`/`--path` - The path to the folder and it's subfolders you want to encrypt all files in
+3. `-p`/`--path` - The path to the folder and it's sub-folders you want to encrypt all files in
 4. `-k`/`--keyEmail` - The email address of the GPG key that should be able to decrypt the files. You can specify
 this more than once. (Required when encrypting)
 5. `--delete` - **Optional argument to delete the original files after the operation completes.**
